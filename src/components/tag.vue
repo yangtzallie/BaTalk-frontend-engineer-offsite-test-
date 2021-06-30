@@ -1,7 +1,7 @@
 <template>
 
     <div>
-        <button v-for="tag in tags" v-bind:key="tag.id" v-on:click="TagClick">{{tag.text}}</button>
+        <button :class="tag.name===activatedTag?'activate':''" v-for="tag in tags" v-bind:key="tag.name" v-on:click="TagClick(tag.name)">{{tag.name}}</button>
        
     </div>
 </template>
@@ -12,19 +12,43 @@ export default {
     name: 'tag',
     
     data: ()=>({
-        tags: [
-      { id: 1, text: 'a' },
-      { id: 2, text: 'b' },
-      { id: 3, text: 'c' },
-      { id: 4, text: 'y' },
-      { id: 5, text: 't' },
-      { id: 6, text: 'r' },
-      { id: 7, text: 'e' },
-      { id: 8, text: 'w' },
-      { id: 9, text: 'q' },
-      { id:10, text: 'p' }
-
-    ]
-    })
+        tags: [],
+        activatedTag:''
+    }),
+    methods: {
+        sendMessageToParent(tagname){
+            this.$root.$emit('mesg from tag',tagname)
+        },
+        TagClick(tagname){
+            this.activatedTag=tagname
+        },
+        getTag(search=""){ 
+            fetch(`https://api.stackexchange.com/2.3/tags?order=desc&sort=popular&site=stackoverflow${search?"&inname="+search:""}`).then(
+                res=>res.json()
+            ).then(json=>{
+                this.tags=json.items.slice(0,10);
+                this.activatedTag=this.tags[0].name;
+            })
+        },
+        registerEvent(){
+            this.$root.$on('msg from searchbar',(search)=>{this.getTag(search)})
+        }
+    },
+    watch: {
+        activatedTag: function(newActivated){
+            this.sendMessageToParent(newActivated);
+        }
+    },
+    mounted: function(){
+        this.getTag()
+        this.registerEvent()
+    }
 }
 </script>
+
+<style scoped>
+.activate {
+    background:red;
+}
+
+</style>
