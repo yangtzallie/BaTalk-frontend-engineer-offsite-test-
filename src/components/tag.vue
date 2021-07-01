@@ -1,7 +1,7 @@
 <template>
 
-    <div>
-        <button :class="tag.name===activatedTag?'activate':''" v-for="tag in tags" v-bind:key="tag.name" v-on:click="TagClick(tag.name)">{{tag.name}}</button>
+    <div id="tag">
+        <button class="tagbutton" :class="tag.name===activatedTag?'activate':''" v-for="tag in tags" v-bind:key="tag.name" v-on:click="TagClick(tag.name)">{{tag.name}}</button>
        
     </div>
 </template>
@@ -47,8 +47,22 @@ export default {
 </script>
 
 <style scoped>
-.activate {
-    background:red;
+#tag{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
 }
+.tagbutton{
+     margin: 3px;
+     border-radius: 6px;
+     border: 2px solid rgba(182, 216, 228, 1);
+     padding: 4px;
+     background: white;
+}
+.activate {
+    background:rgba(182, 216, 228, 1);
+}
+
 
 </style>
